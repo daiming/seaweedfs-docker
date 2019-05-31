@@ -1,120 +1,120 @@
 version: '3'
 
-services: 
+services:
   master1:
-    image: shiguanghuxian/seaweedfs
+    image: chrislusf/seaweedfs
     ports:
-      - 9333:9333
-    volumes: 
+      - 13330:13330
+    volumes:
       - ./master1:/data
-    command: 'master -port=9333 -ip.bind="0.0.0.0" -peers=master1:9333,master2:9334,master3:9335'
+    command: 'master -port=13330 -ip.bind="0.0.0.0" -peers=master1:13330,master2:13332,master3:13334'
     networks:
-      - "weednet"
+      - 'weednet'
   master2:
-    image: shiguanghuxian/seaweedfs
+    image: chrislusf/seaweedfs
     ports:
-      - 9334:9334
-    volumes: 
+      - 13332:13332
+    volumes:
       - ./master2:/data
-    command: 'master -port=9334 -ip.bind="0.0.0.0" -peers=master1:9333,master2:9334,master3:9335'
+    command: 'master -port=13332 -ip.bind="0.0.0.0" -peers=master1:13330,master2:13332,master3:13334'
     depends_on:
       - master1
     networks:
-      - "weednet"
+      - 'weednet'
   master3:
-    image: shiguanghuxian/seaweedfs
+    image: chrislusf/seaweedfs
     ports:
-      - 9335:9335
-    volumes: 
+      - 13334:13334
+    volumes:
       - ./master3:/data
-    command: 'master -port=9335 -ip.bind="0.0.0.0" -peers=master1:9333,master2:9334,master3:9335'
+    command: 'master -port=13334 -ip.bind="0.0.0.0" -peers=master1:13330,master2:13332,master3:13334'
     depends_on:
       - master2
     networks:
-      - "weednet"
+      - 'weednet'
 
   haproxy1:
     image: haproxy:latest
     ports:
-      - 9332:9332
-    volumes: 
+      - 80:80
+    volumes:
       - ./haproxy1:/usr/local/etc/haproxy
-    links: 
+    links:
       - master1
       - master2
       - master3
     networks:
-      - "weednet"
+      - 'weednet'
 
   volume1:
-    image: shiguanghuxian/seaweedfs
+    image: chrislusf/seaweedfs
     ports:
-      - 8080:8080
-    volumes: 
+      - 16310:8080
+    volumes:
       - ./data1:/data
-    command: 'volume -max=5 -port=8080 -ip="xxx.xxx.xxx.x" -ip.bind="0.0.0.0" -mserver=master1:9333'
-    depends_on: 
+    command: 'volume -max=5 -port=8080  -ip.bind="0.0.0.0" -mserver=master1:9333'
+    depends_on:
       - master1
       - master2
       - master3
-    links: 
+    links:
       - master1
       - master2
       - master3
     networks:
-      - "weednet"
+      - 'weednet'
   volume2:
-    image: shiguanghuxian/seaweedfs
+    image: chrislusf/seaweedfs
     ports:
-      - 8081:8081
-    volumes: 
+      - 16312:8081
+    volumes:
       - ./data2:/data
-    command: 'volume -max=5 -port=8081 -ip="xxx.xxx.xxx.x" -ip.bind="0.0.0.0" -mserver=master1:9333'
-    depends_on: 
+    command: 'volume -max=5 -port=8081  -ip.bind="0.0.0.0" -mserver=master1:13330'
+    depends_on:
       - master1
       - master2
       - master3
-    links: 
+    links:
       - master1
       - master2
       - master3
     networks:
-      - "weednet"
+      - 'weednet'
   volume3:
-    image: shiguanghuxian/seaweedfs
+    image: chrislusf/seaweedfs
     ports:
-      - 8082:8082
-    volumes: 
+      - 16314:8082
+    volumes:
       - ./data3:/data
-    command: 'volume -max=5 -port=8082 -ip="xxx.xxx.xxx.x" -ip.bind="0.0.0.0" -mserver=master1:9333'
-    depends_on: 
+    command: 'volume -max=5 -port=8082  -ip.bind="0.0.0.0" -mserver=master1:13330'
+    depends_on:
       - master1
       - master2
       - master3
-    links: 
+    links:
       - master1
       - master2
       - master3
     networks:
-      - "weednet"
+      - 'weednet'
   volume4:
-    image: shiguanghuxian/seaweedfs
+    image: chrislusf/seaweedfs
     ports:
-      - 8083:8083
-    volumes: 
+      - 16316:8083
+    volumes:
       - ./data4:/data
-    command: 'volume -max=5 -port=8083 -ip="xxx.xxx.xxx.x" -ip.bind="0.0.0.0" -mserver=master1:9333'
-    depends_on: 
+    command: 'volume -max=5 -port=8083  -ip.bind="0.0.0.0" -mserver=master1:13330'
+    depends_on:
       - master1
       - master2
       - master3
-    links: 
+    links:
       - master1
       - master2
       - master3
     networks:
-      - "weednet"
+      - 'weednet'
 
-networks: 
-  weednet: 
+networks:
+  weednet:
     driver: bridge # 桥接网络
